@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Classification</title>
+</head>
+<body>
+    <h1>Upload an Image for Classification</h1>
+
+    <!-- Form to upload image -->
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" id="imageFile" name="file" accept="image/*" required>
+        <button type="submit">Upload and Predict</button>
+    </form>
+
+    <h2>Prediction Result:</h2>
+    <p id="predictionResult"></p>
+    <img id="uploadedImage" src="" alt="Uploaded Image" style="max-width: 400px; display:none;"/>
+
+    <script>
+        // Handle form submission with JavaScript
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Get the form data
+            var formData = new FormData();
+            formData.append("file", document.getElementById("imageFile").files[0]);
+
+            // Make the POST request to the server
+            fetch('/predict', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display the prediction result
+                document.getElementById('predictionResult').textContent = "Predicted Class: " + data.prediction;
+
+                // Show the uploaded image
+                var img = document.getElementById('uploadedImage');
+                img.src = '/' + data.image_path;  // Path to the uploaded image
+                img.style.display = 'block';
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
